@@ -22,71 +22,79 @@ enum layers{
 };
 
 enum combo_events {
+  COMBO_ALT,
+  COMBO_GUI,
   COMBO_BSPC,
-  COMBO_NUMBAK,
-  COMBO_TAB,
-  COMBO_ESC,
-  COMBO_DEL,
 };
 
-#define KC_NUM_SPC LT(_NUM_SYM, KC_SPC)
-#define KC_GA LGUI_T(KC_A)
-#define KC_AS LALT_T(KC_S)
-#define KC_CD LCTL_T(KC_D)
-#define KC_SF LSFT_T(KC_F)
-#define KC_SJ RSFT_T(KC_J)
-#define KC_CK RCTL_T(KC_K)
-#define KC_AL RALT_T(KC_L)
-#define KC_GSCLN RGUI_T(KC_SCLN)
+#define KC_CENT LCTL_T(KC_ENT)
+#define KC_GSPC LGUI_T(KC_SPC)
+#define KC_ESFT LSFT_T(KC_ESC)
+#define KC_MTAB LT(_NUM_SYM, KC_TAB)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
-    KC_Q,   KC_W,   KC_E,   KC_R,   KC_T,  KC_MPLY,  KC_Y,   KC_U,    KC_I,   KC_O,     KC_P,
-   KC_GA,  KC_AS,  KC_CD,  KC_SF,   KC_G,            KC_H,  KC_SJ,   KC_CK,  KC_AL, KC_GSCLN,
-    KC_Z,   KC_X,   KC_C,   KC_V,   KC_B,            KC_N,   KC_M, KC_COMM, KC_DOT,  KC_SLSH,
-                         KC_LCTL, KC_ENT,            KC_NUM_SPC, MO(_NAV)
+    KC_Q,   KC_W,   KC_E,   KC_R,    KC_T,  KC_MPLY,  KC_Y,    KC_U,    KC_I,   KC_O,     KC_P,
+    KC_A,   KC_S,   KC_D,   KC_F,    KC_G,            KC_H,    KC_J,    KC_K,   KC_L,  KC_SCLN,
+    KC_Z,   KC_X,   KC_C,   KC_V,    KC_B,            KC_N,    KC_M, KC_COMM, KC_DOT,  KC_SLSH,
+                         KC_ESFT, KC_GSPC,            KC_CENT, KC_MTAB
   ),
 
   [_NUM_SYM] = LAYOUT(
-        KC_1,  KC_2,     KC_3,     KC_4,      KC_5,  KC_TRNS,     KC_6,     KC_7,     KC_8,     KC_9,     KC_0,
-    KC_EXLM,  KC_AT,  KC_HASH,   KC_DLR,   KC_PERC,            KC_CIRC,  KC_AMPR,  KC_ASTR, KC_EQUAL,  KC_MINS,
-    KC_BSLS,KC_LCBR,  KC_LBRC,  KC_LPRN,   KC_UNDS,            KC_RPRN,  KC_RBRC,  KC_RCBR,   KC_DOT,   KC_GRV,
-                                KC_CAPS,   KC_TRNS,            KC_TRNS,  KC_TRNS
+       KC_1,    KC_2,    KC_3,    KC_4,    KC_5,  _______,     KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
+    _______, _______, _______, _______, _______,            KC_MINS,  KC_EQL, KC_LBRC, KC_RBRC, KC_QUOT,
+     KC_GRV, _______, _______, _______, _______,            KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_BSLS,
+                               _______, _______,            _______, _______
   ),
 
   [_NAV] = LAYOUT(
       RESET,  _______,  AG_NORM,  AG_SWAP,  DEBUG, KC_TRNS,   KC_GRV,  KC_PGDN,    KC_UP,  KC_PGUP,  KC_SCLN,
     RGB_TOG,  RGB_HUI,  RGB_SAI,  RGB_VAI,  KC_NO,           KC_HOME,  KC_LEFT,  KC_DOWN,  KC_RGHT,   KC_END,
     RGB_MOD,  RGB_HUD,  RGB_SAD,  RGB_VAD,  KC_NO,           KC_MINS,    KC_RO,  KC_COMM,   KC_DOT,  KC_BSLS,
-                                  KC_TRNS,KC_TRNS,           KC_TRNS,  KC_TRNS
+                                  _______,_______,           _______,  _______
   ),
 };
 
 void encoder_update_user(uint8_t index, bool clockwise) {
-    if (index == 0) {
-        if (clockwise) {
-            tap_code(KC_VOLU);
-        } else {
-            tap_code(KC_VOLD);
-        }
+  if (index == 0) {
+    if (clockwise) {
+      tap_code(KC_VOLD);
+    } else {
+      tap_code(KC_VOLU);
     }
+  }
 }
 
 #ifdef COMBO_ENABLE
+const uint16_t PROGMEM combo_alt[] = {KC_M, KC_N, COMBO_END};
+const uint16_t PROGMEM combo_gui[] = {KC_V, KC_B, COMBO_END};
 const uint16_t PROGMEM combo_bspc[] = {KC_O, KC_P, COMBO_END};
-const uint16_t PROGMEM combo_numbak[] = {KC_0, KC_9, COMBO_END};
-const uint16_t PROGMEM combo_tab[] = {KC_Q, KC_W, COMBO_END};
-const uint16_t PROGMEM combo_esc[] = {KC_E, KC_W, COMBO_END};
-const uint16_t PROGMEM combo_del[] = {KC_MINS, KC_EQL, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
-  [COMBO_BSPC] = COMBO(combo_bspc,KC_BSPC),
-  [COMBO_NUMBAK] = COMBO(combo_numbak,KC_BSPC),
-  [COMBO_TAB] = COMBO(combo_tab,KC_TAB),
-  [COMBO_ESC] = COMBO(combo_esc,KC_ESC),
-  [COMBO_DEL] = COMBO(combo_del,KC_DEL),
-
+  [COMBO_ALT] = COMBO(combo_alt, KC_LALT),
+  [COMBO_GUI] = COMBO(combo_gui, KC_LGUI),
+  [COMBO_BSPC] = COMBO_ACTION(combo_bspc),
 };
+
+uint8_t mod_state;
+void process_combo_event(uint16_t combo_index, bool pressed) {
+  mod_state = get_mods();
+
+  switch(combo_index) {
+  case COMBO_BSPC:
+    if (pressed) {
+      if (mod_state & MOD_MASK_SHIFT) {
+        del_mods(MOD_MASK_SHIFT);
+        tap_code(KC_DEL);
+        set_mods(mod_state);
+      } else {
+        // use tap_code16 for mods
+        tap_code(KC_BSPC);
+      }
+    }
+    break;
+  }
+}
 #endif
 
 #ifdef OLED_DRIVER_ENABLE  //Special thanks to Sickbabies for this great OLED widget!
