@@ -2,44 +2,58 @@
 
 enum layers{
   _BASE,
-  _NUM_SYM,
+  _NUM,
   _NAV,
 };
 
 enum combo_events {
-  COMBO_ALT,
-  COMBO_GUI,
-  COMBO_NAV,
   COMBO_BSPC,
 };
 
-#define KC_CENT LCTL_T(KC_ENT)
-#define KC_GSPC LGUI_T(KC_SPC)
-#define KC_ESFT LSFT_T(KC_ESC)
-#define KC_STAB LT(_NUM_SYM, KC_TAB)
+#define LALT_Q LALT_T(KC_Q)
+#define LCTL_A LCTL_T(KC_A)
+#define LSFT_Z LSFT_T(KC_Z)
+
+#define RCTL_SC RCTL_T(KC_SCLN)
+#define RSFT_SL RSFT_T(KC_SLSH)
+
+#define GUI_ESC LGUI_T(KC_ESC)
+#define NAV_ENT LT(_NAV, KC_ENT)
+#define NUM_TAB LT(_NUM, KC_TAB)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
-       KC_Q,    KC_W,    KC_E,    KC_R,    KC_T, KC_MPLY, KC_Y,    KC_U,       KC_I,   KC_O,     KC_P,
-       KC_A,    KC_S,    KC_D,    KC_F,    KC_G,          KC_H,    KC_J,       KC_K,   KC_L,  KC_SCLN,
-       KC_Z,    KC_X,    KC_C,    KC_V,    KC_B,          KC_N,    KC_M,    KC_COMM, KC_DOT,  KC_SLSH,
-                               KC_ESFT, KC_GSPC,          KC_CENT, KC_STAB
+     LALT_Q,    KC_W,    KC_E,    KC_R,    KC_T, KC_MPLY, KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,
+     LCTL_A,    KC_S,    KC_D,    KC_F,    KC_G,          KC_H,    KC_J,    KC_K,    KC_L,   RCTL_SC,
+     LSFT_Z,    KC_X,    KC_C,    KC_V,    KC_B,          KC_N,    KC_M,    KC_COMM, KC_DOT, RSFT_SL,
+                               GUI_ESC,  KC_SPC,          NAV_ENT, NUM_TAB
   ),
 
-  [_NUM_SYM] = LAYOUT(
-       KC_1,    KC_2,    KC_3,    KC_4,    KC_5, _______,    KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
-    _______, RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI,          KC_MINS,  KC_EQL, KC_LBRC, KC_RBRC, KC_QUOT,
-     KC_GRV, RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD,          KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_BSLS,
+  [_NUM] = LAYOUT(
+       KC_1,    KC_2,    KC_3,    KC_4,    KC_5, _______, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
+    _______, _______, _______, _______,  KC_GRV,          KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_QUOT,
+    _______, _______, _______, _______, _______,          KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_BSLS,
                                _______, _______,          _______, _______
   ),
 
   [_NAV] = LAYOUT(
-    _______, _______, _______, _______, _______, _______, KC_HOME, _______,   KC_UP, _______, KC_PGUP,
-    _______, _______, _______, _______, _______,           KC_END, KC_LEFT, KC_DOWN, KC_RGHT, KC_PGDN,
-    KC_Z,       KC_X, _______, _______, _______,          _______, _______, _______, _______, _______,
+    RGB_TOG, RGB_HUI, RGB_SAI, RGB_VAI, _______, _______, KC_HOME, _______, KC_UP,   _______, KC_PGUP,
+    RGB_MOD, RGB_HUD, RGB_SAD, RGB_VAD, _______,          KC_END,  KC_LEFT, KC_DOWN, KC_RGHT, KC_PGDN,
+    _______, _______, _______, _______, _______,          _______, _______, _______, _______, _______,
                                _______, _______,          _______, _______
   ),
 };
+
+uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
+  switch (keycode) {
+  case LT(_NUM, KC_TAB):
+    return 100;
+  case LGUI_T(KC_ESC):
+    return 100;
+  default:
+    return TAPPING_TERM;
+  }
+}
 
 uint8_t mod_state;
 
@@ -68,15 +82,9 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 }
 
 #ifdef COMBO_ENABLE
-const uint16_t PROGMEM combo_alt[] = {KC_M, KC_N, COMBO_END};
-const uint16_t PROGMEM combo_gui[] = {KC_V, KC_B, COMBO_END};
-const uint16_t PROGMEM combo_nav[] = {KC_Q, KC_W, COMBO_END};
 const uint16_t PROGMEM combo_bspc[] = {KC_O, KC_P, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
-  [COMBO_ALT] = COMBO(combo_alt, KC_LALT),
-  [COMBO_GUI] = COMBO(combo_gui, KC_LGUI),
-  [COMBO_NAV] = COMBO_ACTION(combo_nav),
   [COMBO_BSPC] = COMBO_ACTION(combo_bspc),
 };
 
@@ -84,14 +92,6 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
   mod_state = get_mods();
 
   switch(combo_index) {
-  case COMBO_NAV: {
-    if (pressed) {
-      layer_on(_NAV);
-    } else {
-      layer_off(_NAV);
-    }
-    break;
-  }
   case COMBO_BSPC:
     if (pressed) {
       if (mod_state & MOD_MASK_SHIFT) {
