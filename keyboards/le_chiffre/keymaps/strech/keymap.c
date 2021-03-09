@@ -2,12 +2,13 @@
 
 enum layers{
   _BASE,
-  _NUM,
+  _NUM_SYM,
   _NAV,
 };
 
 enum combo_events {
   COMBO_TAB,
+  COMBO_ESC,
   COMBO_BSPC,
 };
 
@@ -18,19 +19,18 @@ enum combo_events {
 #define RCTL_SC RCTL_T(KC_SCLN)
 #define RSFT_SL RSFT_T(KC_SLSH)
 
-#define GUI_ESC LGUI_T(KC_ESC)
 #define NAV_ENT LT(_NAV, KC_ENT)
-#define NUM_TAB LT(_NUM, KC_TAB)
+#define NUM_SYM MO(_NUM_SYM)
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
        KC_Q,    KC_W,    KC_E,    KC_R,    KC_T, KC_MPLY, KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,
      LCTL_A,  LALT_S,    KC_D,    KC_F,    KC_G,          KC_H,    KC_J,    KC_K,    KC_L,   RCTL_SC,
      LSFT_Z,    KC_X,    KC_C,    KC_V,    KC_B,          KC_N,    KC_M,    KC_COMM, KC_DOT, RSFT_SL,
-                               GUI_ESC,  KC_SPC,          NAV_ENT, NUM_TAB
+                               KC_LGUI,  KC_SPC,          NAV_ENT, NUM_SYM
   ),
 
-  [_NUM] = LAYOUT(
+  [_NUM_SYM] = LAYOUT(
        KC_1,    KC_2,    KC_3,    KC_4,    KC_5, _______, KC_6,    KC_7,    KC_8,    KC_9,    KC_0,
     _______, _______, _______, _______,  KC_GRV,          KC_MINS, KC_EQL,  KC_LBRC, KC_RBRC, KC_QUOT,
     _______, _______, _______, _______, _______,          KC_UNDS, KC_PLUS, KC_LCBR, KC_RCBR, KC_BSLS,
@@ -44,17 +44,6 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
                                _______, _______,          _______, _______
   ),
 };
-
-uint16_t get_tapping_term(uint16_t keycode, keyrecord_t *record) {
-  switch (keycode) {
-  case LT(_NUM, KC_TAB):
-    return 100;
-  case LGUI_T(KC_ESC):
-    return 100;
-  default:
-    return TAPPING_TERM;
-  }
-}
 
 uint8_t mod_state;
 
@@ -83,11 +72,13 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 }
 
 #ifdef COMBO_ENABLE
-const uint16_t PROGMEM combo_bspc[] = {KC_O, KC_P, COMBO_END};
 const uint16_t PROGMEM combo_tab[] = {KC_Q, KC_W, COMBO_END};
+const uint16_t PROGMEM combo_esc[] = {KC_W, KC_E, COMBO_END};
+const uint16_t PROGMEM combo_bspc[] = {KC_O, KC_P, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
   [COMBO_TAB] = COMBO(combo_tab, KC_TAB),
+  [COMBO_ESC] = COMBO(combo_esc, KC_ESC),
   [COMBO_BSPC] = COMBO_ACTION(combo_bspc),
 };
 
@@ -102,7 +93,6 @@ void process_combo_event(uint16_t combo_index, bool pressed) {
         tap_code(KC_DEL);
         set_mods(mod_state);
       } else {
-        // use tap_code16 for mods
         tap_code(KC_BSPC);
       }
     }
