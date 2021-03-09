@@ -7,11 +7,12 @@ enum layers{
 };
 
 enum combo_events {
+  COMBO_TAB,
   COMBO_BSPC,
 };
 
-#define LALT_Q LALT_T(KC_Q)
 #define LCTL_A LCTL_T(KC_A)
+#define LALT_S LALT_T(KC_S)
 #define LSFT_Z LSFT_T(KC_Z)
 
 #define RCTL_SC RCTL_T(KC_SCLN)
@@ -23,8 +24,8 @@ enum combo_events {
 
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
-     LALT_Q,    KC_W,    KC_E,    KC_R,    KC_T, KC_MPLY, KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,
-     LCTL_A,    KC_S,    KC_D,    KC_F,    KC_G,          KC_H,    KC_J,    KC_K,    KC_L,   RCTL_SC,
+       KC_Q,    KC_W,    KC_E,    KC_R,    KC_T, KC_MPLY, KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,
+     LCTL_A,  LALT_S,    KC_D,    KC_F,    KC_G,          KC_H,    KC_J,    KC_K,    KC_L,   RCTL_SC,
      LSFT_Z,    KC_X,    KC_C,    KC_V,    KC_B,          KC_N,    KC_M,    KC_COMM, KC_DOT, RSFT_SL,
                                GUI_ESC,  KC_SPC,          NAV_ENT, NUM_TAB
   ),
@@ -83,8 +84,10 @@ void encoder_update_user(uint8_t index, bool clockwise) {
 
 #ifdef COMBO_ENABLE
 const uint16_t PROGMEM combo_bspc[] = {KC_O, KC_P, COMBO_END};
+const uint16_t PROGMEM combo_tab[] = {KC_Q, KC_W, COMBO_END};
 
 combo_t key_combos[COMBO_COUNT] = {
+  [COMBO_TAB] = COMBO(combo_tab, KC_TAB),
   [COMBO_BSPC] = COMBO_ACTION(combo_bspc),
 };
 
