@@ -1,6 +1,6 @@
 #include QMK_KEYBOARD_H
 
-enum layers{
+enum layers {
   _BASE,
   _NUM_SYM,
   _NAV,
@@ -13,10 +13,10 @@ enum combo_events {
 };
 
 #define LCTL_A LCTL_T(KC_A)
-#define LALT_S LALT_T(KC_S)
 #define LSFT_Z LSFT_T(KC_Z)
 
-#define RCTL_SC RCTL_T(KC_SCLN)
+#define RCTL_J RCTL_T(KC_J)
+#define RALT_M RALT_T(KC_M)
 #define RSFT_SL RSFT_T(KC_SLSH)
 
 #define NAV_ENT LT(_NAV, KC_ENT)
@@ -25,8 +25,8 @@ enum combo_events {
 const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
   [_BASE] = LAYOUT(
        KC_Q,    KC_W,    KC_E,    KC_R,    KC_T, KC_MPLY, KC_Y,    KC_U,    KC_I,    KC_O,   KC_P,
-     LCTL_A,  LALT_S,    KC_D,    KC_F,    KC_G,          KC_H,    KC_J,    KC_K,    KC_L,   RCTL_SC,
-     LSFT_Z,    KC_X,    KC_C,    KC_V,    KC_B,          KC_N,    KC_M,    KC_COMM, KC_DOT, RSFT_SL,
+     LCTL_A,    KC_S,    KC_D,    KC_F,    KC_G,          KC_H,    RCTL_J,  KC_K,    KC_L,   KC_SCLN,
+     LSFT_Z,    KC_X,    KC_C,    KC_V,    KC_B,          KC_N,    RALT_M,  KC_COMM, KC_DOT, RSFT_SL,
                                KC_LGUI,  KC_SPC,          NAV_ENT, NUM_SYM
   ),
 
@@ -52,20 +52,20 @@ void encoder_update_user(uint8_t index, bool clockwise) {
     mod_state = get_mods();
 
     if (clockwise) {
-      if (mod_state & MOD_MASK_SHIFT) {
-        del_mods(MOD_MASK_SHIFT);
-        tap_code(KC_BRMD);
-        set_mods(mod_state);
-      } else {
-        tap_code(KC_VOLD);
-      }
-    } else {
       if (get_mods() & MOD_MASK_SHIFT) {
         del_mods(MOD_MASK_SHIFT);
         tap_code(KC_BRMU);
         set_mods(mod_state);
       } else {
         tap_code(KC_VOLU);
+      }
+    } else {
+      if (mod_state & MOD_MASK_SHIFT) {
+        del_mods(MOD_MASK_SHIFT);
+        tap_code(KC_BRMD);
+        set_mods(mod_state);
+      } else {
+        tap_code(KC_VOLD);
       }
     }
   }
